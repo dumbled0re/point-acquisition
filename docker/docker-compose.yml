@@ -1,0 +1,22 @@
+version: '3'
+services:
+  selenium:
+    container_name: selenium-chrome
+    # image: selenium/standalone-chrome-debug:3.141.59-20210929
+    image: seleniarm/standalone-chromium:latest
+    ports:
+      - 4444:4444
+      - 5900:5900
+    shm_size: "2gb"
+  app:
+    depends_on:
+      - selenium
+    container_name: app
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    env_file:
+      - ../app/.env
+    volumes:
+        - ../app:/usr/src/app
+    tty: true
