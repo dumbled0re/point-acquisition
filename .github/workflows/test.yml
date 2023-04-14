@@ -18,7 +18,7 @@ jobs:
 
       - name: compose-run
         env:
-          SLACK_WEBHOOK_URL: "${{ secrets.SLACK_WEBHOOK_URL }}"
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           docker-compose -f docker/docker-compose.yml up -d --build
           docker exec app python src/main.py
