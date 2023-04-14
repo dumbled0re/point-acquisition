@@ -11,6 +11,7 @@ class SlackNotify:
 
     def __init__(self) -> None:
         self.slack_hook_url = os.getenv("SLACK_WEBHOOK_URL")
+        # self.slack_hook_url = os.environ["SLACK_WEBHOOK_URL"]
         assert self.slack_hook_url is not None, "環境変数にSLACK_WEBHOOK_URLが設定されていません。"
 
     def slack_notify(
