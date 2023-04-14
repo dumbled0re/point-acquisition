@@ -15,15 +15,10 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: feature/rakuten
-      - name: check working directory
-        run: pwd
-
-      - name: check under directory
-        run: ls
 
       - name: compose-run
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          cd docker/ && docker-compose.yml up -d
+          docker-compose -f docker/docker-compose.yml up -d --build
           docker exec app python src/main.py
