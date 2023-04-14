@@ -13,6 +13,8 @@ services:
     depends_on:
       - selenium
     container_name: app
+    environment:
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
     build:
       context: ..
       dockerfile: Dockerfile

@@ -5,9 +5,6 @@ on:
     - cron: "0 0 * * *"
   workflow_dispatch:
 
-env:
-  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
 jobs:
   build:
     name: Run test
@@ -20,8 +17,8 @@ jobs:
           ref: feature/rakuten
 
       - name: compose-run
-        # env:
-        #   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           docker-compose -f docker/docker-compose.yml up -d --build
           docker exec app python src/main.py
