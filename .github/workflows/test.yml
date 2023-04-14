@@ -11,9 +11,19 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: feature/rakuten
+      - name: check working directory
+        run: pwd
+
+      - name: check under directory
+        run: ls
+
       - name: compose-run
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          docker-compose up -d
+          cd docker/ && docker-compose up -d
           docker exec app python src/main.py
