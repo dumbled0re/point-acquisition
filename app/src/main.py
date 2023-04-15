@@ -1,10 +1,13 @@
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
+
+# from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from utils.slack_notify import SlackNotify
 
 slack = SlackNotify()
 
 chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument("--headless")
 chrome_options.add_argument("--lang=ja-JP")
 chrome_options.add_argument("--disable-dev-shm-usage")
 
