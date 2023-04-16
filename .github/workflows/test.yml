@@ -1,26 +1,45 @@
-name: test-action
+# name: test-action
 
+# on:
+#   schedule:
+#     - cron: "0 0 * * *"
+#   workflow_dispatch:
+
+# jobs:
+#   build:
+#     name: Run test
+#     runs-on: ubuntu-20.04
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+#         with:
+#           ref: feature/rakuten
+
+#       - name: compose-run
+#         env:
+#           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#         run: |
+#           docker-compose -f docker/docker-compose.yml up -d --build
+#           docker ps
+#           docker inspect selenium-chrome
+#           docker exec app python src/main.py
+
+name: selenium-github-actions
 on:
   schedule:
     - cron: "0 0 * * *"
   workflow_dispatch:
-
 jobs:
-  build:
-    name: Run test
-    runs-on: ubuntu-20.04
-
+  selenium:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
         with:
-          ref: feature/rakuten
-
-      - name: compose-run
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-          docker-compose -f docker/docker-compose.yml up -d --build
-          docker ps
-          docker inspect selenium-chrome
-          docker exec app python src/main.py
+          python-version: '3.8'
+          architecture: 'x64'
+      - run: |
+          pip install get-chrome-driver --upgrade
+          pip install -r ./requirements.txt
+          python app/src/main.py
