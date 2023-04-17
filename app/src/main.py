@@ -8,6 +8,7 @@ def driver_init():
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     driver = webdriver.Chrome("/usr/local/bin/chromedriver", options=options)
+
     return driver
 
 
