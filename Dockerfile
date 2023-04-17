@@ -16,7 +16,6 @@ RUN apt-get update -yqq \
     && wget -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/112.0.5615.49/chromedriver_linux64.zip \
     && unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
 
-# Pythonの依存関係のインストール
 WORKDIR /usr/src/app
 
 COPY requirements.txt ./
