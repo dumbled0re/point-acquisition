@@ -21,8 +21,6 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           docker-compose -f docker/docker-compose.yml up -d --build
-          docker ps
-          docker inspect selenium-chrome
           docker exec app python src/main.py
 
 # name: test-action
