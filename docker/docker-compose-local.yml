@@ -1,0 +1,21 @@
+version: '3'
+services:
+  selenium:
+    container_name: selenium-chrome
+    image: seleniarm/standalone-chromium:4.1.4-20220429
+    ports:
+      - 4444:4444
+      - 5900:5900
+    shm_size: "2gb"
+  app:
+    depends_on:
+      - selenium
+    container_name: app
+    build:
+      context: ..
+      dockerfile: Dockerfile.local
+    env_file:
+      - ../src/.env
+    volumes:
+        - ../src:/usr/src
+    tty: true
