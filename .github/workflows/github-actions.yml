@@ -1,4 +1,5 @@
-name: auto-point-acquisition / Run python script
+# name: auto-point-acquisition / Run python script
+name: test-action
 
 on:
   schedule:
