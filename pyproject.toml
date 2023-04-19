@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "point acquisition"
+version = "0.1.0"
+description = "Acquiring points from point sites"
+authors = ["<info@example.jp>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = "^23.3.0"
+flake8 = "^6.0.0"
+mypy = "^1.2.0"
+isort = "^5.12.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
