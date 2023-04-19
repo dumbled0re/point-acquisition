@@ -1,5 +1,5 @@
 # name: auto-point-acquisition / Run python script
-name: test-action
+name: Run python script
 
 on:
   schedule:
@@ -26,7 +26,7 @@ jobs:
         #   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           docker-compose -f docker/docker-compose.yml up -d --build
-          docker exec app python main.py
+          docker exec app python ./auto_deposit_rakuten_horse_racing/main.py
 
       #-- Slack通知 --#
       # 成功
