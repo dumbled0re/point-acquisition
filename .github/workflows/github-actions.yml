@@ -1,53 +1,53 @@
-# name: auto-point-acquisition / Run python script
-name: Run python script
+# # name: auto-point-acquisition / Run python script
+# name: Run python script
 
-on:
-  schedule:
-    - cron: "0 0 * * *"
-  workflow_dispatch:
+# on:
+#   schedule:
+#     - cron: "0 0 * * *"
+#   workflow_dispatch:
 
-env:
-  SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+# env:
+#   SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+#   SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-jobs:
-  point-acquisition:
-  # run-python-script:
-    runs-on: ubuntu-20.04
+# jobs:
+#   point-acquisition:
+#   # run-python-script:
+#     runs-on: ubuntu-20.04
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          ref: feature/rakuten
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+#         with:
+#           ref: feature/rakuten
 
-      - name: compose-run
-        # env:
-        #   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-          docker-compose -f docker/docker-compose.yml up -d --build
-          docker exec app python ./auto_deposit_rakuten_horse_racing/main.py
+#       - name: compose-run
+#         # env:
+#         #   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#         run: |
+#           docker-compose -f docker/docker-compose.yml up -d --build
+#           docker exec app python ./auto_deposit_rakuten_horse_racing/main.py
 
-      #-- Slack通知 --#
-      # 成功
-      - name: Slack Notification on Success
-        uses: rtCamp/action-slack-notify@v2
-        if: ${{ success() }}
-        env:
-          SLACK_USERNAME: auto-deposit-rakuten-horse-racing
-          SLACK_TITLE: Success
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: オートレースに入金が完了しました🚀
+#       #-- Slack通知 --#
+#       # 成功
+#       - name: Slack Notification on Success
+#         uses: rtCamp/action-slack-notify@v2
+#         if: ${{ success() }}
+#         env:
+#           SLACK_USERNAME: auto-deposit-rakuten-horse-racing
+#           SLACK_TITLE: Success
+#           SLACK_COLOR: ${{ job.status }}
+#           SLACK_MESSAGE: オートレースに入金が完了しました🚀
 
-      # 失敗
-      - name: Slack Notification on Failure
-        uses: rtCamp/action-slack-notify@v2
-        if: ${{ failure() }}
-        env:
-          SLACK_USERNAME: auto-deposit-rakuten-horse-racing
-          SLACK_TITLE: Failure
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: オートレースの入金が失敗しました😢
+#       # 失敗
+#       - name: Slack Notification on Failure
+#         uses: rtCamp/action-slack-notify@v2
+#         if: ${{ failure() }}
+#         env:
+#           SLACK_USERNAME: auto-deposit-rakuten-horse-racing
+#           SLACK_TITLE: Failure
+#           SLACK_COLOR: ${{ job.status }}
+#           SLACK_MESSAGE: オートレースの入金が失敗しました😢
 
 # name: test-action
 # on:
@@ -73,3 +73,34 @@ jobs:
 #           pip install get-chrome-driver --upgrade
 #           pip install -r ./requirements.txt
 #           python app/src/main.py
+
+name: Run python script
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  run-python-script:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run main
+        run: |
+          docker-compose -f docker/docker-compose.yml up -d --build
+          docker exec app python ./auto_deposit_rakuten_horse_racing/main.py
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        if: ${{ success() }}
+        env:
+          SLACK_USERNAME: Bot
+          SLACK_TITLE: Success
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_MESSAGE: 成功しました🚀
+          SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -7,8 +7,5 @@ services:
       context: ..
       dockerfile: Dockerfile
     volumes:
-        - ../src:/usr/src
-    environment:
-      # SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
-      TZ: "Asia/Tokyo"
+      - ../src:/usr/src
     tty: true
