@@ -17,5 +17,5 @@ services:
     env_file:
       - ../src/.env
     volumes:
-        - ../src:/usr/src
+      - ../src:/usr/src
     tty: true
