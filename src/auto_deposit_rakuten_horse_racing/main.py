@@ -8,7 +8,7 @@ options.add_argument("--headless")
 options.add_argument("--no-sandbox")
 driver = webdriver.Chrome("/usr/local/bin/chromedriver", options=options)
 
-driver.get("https://zenn.dev/")
+driver.get("https://books.toscrape.com/")
 time.sleep(3)
 driver.close()
 driver.quit()
