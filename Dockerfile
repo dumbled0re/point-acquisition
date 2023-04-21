@@ -1,6 +1,6 @@
 FROM --platform=linux/amd64 python:3.9.16-bullseye
 
-# Google Chromeのインストール
+# Google Chrome&ChromeDriverのインストール
 RUN apt-get update -yqq \
     && apt-get install -yqq \
         wget \
@@ -9,13 +9,17 @@ RUN apt-get update -yqq \
     && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update -yqq \
     # 公式リポジトリにあるバージョン確認する
-    # && apt-cache madison google-chrome-stable \
-    && apt-get install -yqq google-chrome-stable=112.0.5615.121-1 \
+    # && apt-cache madison google-chrome-stable
+    && CHROME_LATEST_VERSION=$(curl -sS "omahaproxy.appspot.com/linux?channel=stable") \
+    # && echo "CHROME_LATEST_VERSION: $CHROME_LATEST_VERSION" \
+    && apt-get install -yqq google-chrome-stable=$CHROME_LATEST_VERSION-1 \
     && rm /etc/apt/sources.list.d/google-chrome.list \
-    && rm -rf /var/lib/apt/lists/*
-
-# ChromeDriverのインストール
-RUN wget -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/112.0.5615.49/chromedriver_linux64.zip \
+    && rm -rf /var/lib/apt/lists/* \
+    && CHROME_LATEST_MAJOR_VERSION=$(echo $CHROME_LATEST_VERSION | cut -d . -f 1) \
+    # && echo "CHROME_LATEST_MAJOR_VERSION: $CHROME_LATEST_MAJOR_VERSION" \
+    && CHROME_DRIVER_VERSION=$(curl -sS "chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_LATEST_MAJOR_VERSION}") \
+    # && echo "CHROME_DRIVER_VERSION: $CHROME_DRIVER_VERSION" \
+    && wget -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip \
     && unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/ \
     && rm /tmp/chromedriver.zip
 
