@@ -2,39 +2,28 @@ import os
 from time import sleep
 
 from selenium import webdriver
-from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from utils.slack_notify import SlackNotify
-
 
 def driver_init():
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--lang=ja-JP")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-
-    capabilities = DesiredCapabilities.CHROME.copy()
-
-    driver = webdriver.Remote(
-        command_executor="http://selenium:4444/wd/hub",
-        desired_capabilities=capabilities,
-        options=chrome_options,
-    )
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    driver = webdriver.Chrome("/usr/local/bin/chromedriver", options=options)
 
     return driver
 
 
 def main():
-    slack = SlackNotify()
     driver = driver_init()
     try:
         # JRAにアクセス
-        print("autorace login start")
         driver.get("https://vote.autorace.jp/login")
-        sleep(5)
+        sleep(3)
 
         # ログイン
         search = driver.find_element(By.NAME, "userNumber")
@@ -49,8 +38,6 @@ def main():
             )
         )
         button.click()
-
-        print("autorace login end")
         sleep(3)
 
         # 入金リンクをクリック
@@ -79,7 +66,7 @@ def main():
             )
         )
         button.click()
-        sleep(5)
+        sleep(3)
 
         # 入金ボタンクリック
         button = WebDriverWait(driver, 20).until(
@@ -91,14 +78,14 @@ def main():
             )
         )
         button.click()
-        sleep(5)
+        sleep(3)
 
         # 暗証番号の入力
         search = driver.find_element(
             By.XPATH, "/html/body/reach-portal/div/div/div/div[2]/div[1]/input"
         )
         search.send_keys(os.getenv("AUTO_RACE_PIN"))
-        sleep(5)
+        sleep(3)
 
         # okボタンクリック
         button = WebDriverWait(driver, 20).until(
@@ -110,7 +97,7 @@ def main():
             )
         )
         button.click()
-        sleep(5)
+        sleep(3)
 
         # 清算
         # element = driver.find_element_by_name('btnWireOut')
@@ -119,22 +106,11 @@ def main():
         # ポップアップウィンドウに表示されたメッセージに同意(Alert(driver).dismiss()で、アラートを拒否)
         # Alert(driver).accept()
 
-        # 入金完了通知
-        slack.slack_notify(
-            text="Auto Race ネット投票に入金が完了しました",
-            username="auto_deposit_rakuten_horse_racing",
-            color="good",
-        )
     except ZeroDivisionError:
-        slack.slack_notify(
-            text="Auto Race ネット投票に入金ができませんでした",
-            username="auto_deposit_rakuten_horse_racing",
-            color="danger",
-        )
+        pass
     finally:
         driver.close()
         driver.quit()
-        print("driver stop")
 
 
 if __name__ == "__main__":
