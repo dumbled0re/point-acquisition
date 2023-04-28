@@ -16,8 +16,8 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v2
-        with:
-          ref: feature/rakuten
+        # with:
+        #   ref: feature/rakuten
 
       - name: run auto racing script
         env:
