@@ -104,7 +104,7 @@ def main():
         # element.click()
 
         # ポップアップウィンドウに表示されたメッセージに同意(Alert(driver).dismiss()で、アラートを拒否)
-        # Alert(driver).accept()
+        Alert(driver).accept()
 
     except ZeroDivisionError:
         pass
