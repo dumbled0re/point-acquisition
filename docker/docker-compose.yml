@@ -6,6 +6,10 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile
+    environment:
+      AUTO_RACE_USER_NUMBER: ${AUTO_RACE_USER_NUMBER}
+      AUTO_RACE_PASSWORD: ${AUTO_RACE_PASSWORD}
+      AUTO_RACE_PIN: ${AUTO_RACE_PIN}
     volumes:
       - ../src:/usr/src
     tty: true
