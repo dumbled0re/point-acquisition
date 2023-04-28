@@ -7,7 +7,7 @@ on:
 
 env:
   SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
   point-acquisition:
@@ -16,8 +16,8 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v2
-        # with:
-        #   ref: feature/rakuten
+        with:
+          ref: feature/rakuten
 
       - name: run auto racing script
         env:
