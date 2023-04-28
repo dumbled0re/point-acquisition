@@ -13,6 +13,7 @@ def driver_init():
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome("/usr/local/bin/chromedriver", options=options)
 
     return driver
@@ -104,7 +105,7 @@ def main():
         # element.click()
 
         # ポップアップウィンドウに表示されたメッセージに同意(Alert(driver).dismiss()で、アラートを拒否)
-        Alert(driver).accept()
+        # Alert(driver).accept()
 
     except ZeroDivisionError:
         pass
