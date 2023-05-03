@@ -23,7 +23,12 @@ def get_point_from_point_income(driver):
     driver.get("https://pointi.jp/entrance.php")
     sleep(3)
 
-    search = driver.find_element(By.NAME, "email_address")
+    # search = driver.find_element(By.NAME, "email_address")
+    # search.send_keys(os.getenv("POINT_INCOME_EMAIL"))
+
+    search = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "email_address"))
+    )
     search.send_keys(os.getenv("POINT_INCOME_EMAIL"))
 
     password = driver.find_element(By.NAME, "password")
