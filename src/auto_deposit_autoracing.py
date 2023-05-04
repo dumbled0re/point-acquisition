@@ -1,4 +1,3 @@
-import os
 from time import sleep
 
 from selenium import webdriver
@@ -7,6 +6,8 @@ from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+
+from utils import config
 
 
 def driver_init():
@@ -28,10 +29,10 @@ def main():
 
         # ログイン
         search = driver.find_element(By.NAME, "userNumber")
-        search.send_keys(os.getenv("AUTO_RACE_USER_NUMBER"))
+        search.send_keys(config.AUTO_RACE_USER_NUMBER)
 
         search = driver.find_element(By.NAME, "password")
-        search.send_keys(os.getenv("AUTO_RACE_PASSWORD"))
+        search.send_keys(config.AUTO_RACE_PASSWORD)
 
         button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable(
@@ -85,7 +86,7 @@ def main():
         search = driver.find_element(
             By.XPATH, "/html/body/reach-portal/div/div/div/div[2]/div[1]/input"
         )
-        search.send_keys(os.getenv("AUTO_RACE_PIN"))
+        search.send_keys(config.AUTO_RACE_PIN)
         sleep(3)
 
         # okボタンクリック
