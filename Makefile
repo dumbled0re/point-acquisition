@@ -31,5 +31,8 @@ exec_test:
 exec_auto_deposit_autoracing:
 	docker exec app python ./auto_deposit_autoracing.py
 
+exec_auto_deposit_spat4:
+	docker exec app python ./auto_deposit_spat4.py
+
 exec_auto_get_point_income_local:
 	docker exec app python ./auto_get_point_income_local.py
