@@ -26,7 +26,6 @@ def deposit_spat4(driver):
 
     # ログイン
     search = driver.find_element(By.ID, "MEMBERNUMR")
-    print(f"加入番号: {config.SPAT4_MEMBERNUM}")
     search.send_keys(config.SPAT4_MEMBERNUM)
 
     search = driver.find_element(By.ID, "MEMBERIDR")
@@ -38,7 +37,7 @@ def deposit_spat4(driver):
     button.click()
     sleep(3)
 
-    # 入金ページ
+    # 入金ページに遷移
     button = WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable(
             (By.XPATH, "/html/body/form/div/div[3]/div/ul/li[4]/input")
