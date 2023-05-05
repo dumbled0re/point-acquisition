@@ -10,14 +10,20 @@ env:
   SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
-  point-acquisition:
+  auto-point-acquisition:
     runs-on: ubuntu-20.04
 
     steps:
       - name: checkout code
         uses: actions/checkout@v2
         # with:
-        #   ref: feature/point-income
+        #   ref: feature/spat4
+
+      - name: set up docker compose
+        uses: docker/compose-cli-action@v0.1.1
+        with:
+          compose-file: docker/docker-compose.yml
+          compose-command: up -d --build
 
       - name: run auto racing script
         env:
@@ -25,23 +31,30 @@ jobs:
           AUTO_RACE_PASSWORD: ${{ secrets.AUTO_RACE_PASSWORD }}
           AUTO_RACE_PIN: ${{ secrets.AUTO_RACE_PIN }}
         run: |
-          docker-compose -f docker/docker-compose.yml up -d --build
           docker exec app python ./auto_deposit_autoracing.py
+
+      - name: run spat4 script
+        env:
+          SPAT4_MEMBERNUM: ${{ secrets.SPAT4_MEMBERNUM }}
+          SPAT4_MEMBERID: ${{ secrets.SPAT4_MEMBERID }}
+          SPAT4_MEMBERPASS: ${{ secrets.SPAT4_MEMBERPASS }}
+        run: |
+          docker exec app python ./auto_deposit_spat4.py
 
       - name: slack notification on success
         uses: rtCamp/action-slack-notify@v2
         if: ${{ success() }}
         env:
-          SLACK_USERNAME: auto-deposit-rakuten-horse-racing
+          SLACK_USERNAME: auto-point-acquisition
           SLACK_TITLE: Success
           SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: オートレースに入金が完了しました🚀
+          SLACK_MESSAGE: 自動入金が完了しました🚀
 
       - name: slack notification on failure
         uses: rtCamp/action-slack-notify@v2
         if: ${{ failure() }}
         env:
-          SLACK_USERNAME: auto-deposit-rakuten-horse-racing
+          SLACK_USERNAME: auto-point-acquisition
           SLACK_TITLE: Failure
           SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: オートレースの入金が失敗しました😢
+          SLACK_MESSAGE: 自動入金が失敗しました😢

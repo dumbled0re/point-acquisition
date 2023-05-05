@@ -40,7 +40,7 @@ def deposit_autorace(driver):
     button.click()
     sleep(3)
 
-    # 入金リンクをクリック
+    # 入金リンク
     a_item = driver.find_element(
         By.XPATH, "//*[@id='__next']/div/div/div[1]/div/ul/li[2]/a"
     )
