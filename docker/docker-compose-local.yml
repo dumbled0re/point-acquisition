@@ -10,7 +10,7 @@ services:
   app:
     depends_on:
       - selenium
-    container_name: app
+    container_name: local_app
     build:
       context: ..
       dockerfile: Dockerfile.local
