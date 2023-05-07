@@ -20,22 +20,21 @@ jobs:
         #   ref: feature/spat4
 
       - name: set up docker compose
-        run: |
-          docker-compose -f docker/docker-compose.yml up -d --build
-
-      - name: run auto racing script
         env:
           AUTO_RACE_USER_NUMBER: ${{ secrets.AUTO_RACE_USER_NUMBER }}
           AUTO_RACE_PASSWORD: ${{ secrets.AUTO_RACE_PASSWORD }}
           AUTO_RACE_PIN: ${{ secrets.AUTO_RACE_PIN }}
+          SPAT4_MEMBERNUM: ${{ secrets.SPAT4_MEMBERNUM }}
+          SPAT4_MEMBERID: ${{ secrets.SPAT4_MEMBERID }}
+          SPAT4_MEMBERPASS: ${{ secrets.SPAT4_MEMBERPASS }}
+        run: |
+          docker-compose -f docker/docker-compose.yml up -d --build
+
+      - name: run auto racing script
         run: |
           docker exec app python ./auto_deposit_autoracing.py
 
       - name: run spat4 script
-        env:
-          SPAT4_MEMBERNUM: ${{ secrets.SPAT4_MEMBERNUM }}
-          SPAT4_MEMBERID: ${{ secrets.SPAT4_MEMBERID }}
-          SPAT4_MEMBERPASS: ${{ secrets.SPAT4_MEMBERPASS }}
         run: |
           docker exec app python ./auto_deposit_spat4.py
 
