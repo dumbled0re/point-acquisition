@@ -26,7 +26,7 @@ docker_down:
 	docker-compose -f docker/docker-compose.yml down
 
 exec_test:
-	docker exec app python test.py
+	docker exec local_app python test.py $(TARGET)
 
 exec_auto_deposit_autoracing:
 	docker exec app python ./auto_deposit_autoracing.py
