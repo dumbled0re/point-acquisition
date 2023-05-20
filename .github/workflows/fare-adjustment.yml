@@ -1,0 +1,57 @@
+name: auto-fare-adjustment
+
+on:
+  schedule:
+    - cron: "0 0 1 * *" # UTCの1:00に実行する -> 日本時刻の午前10時
+  workflow_dispatch:
+
+env:
+  SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+jobs:
+  auto-fare-adjustment:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+        # with:
+        #   ref: feature/spat4
+
+      - name: set up docker compose
+        env:
+          AUTO_RACE_USER_NUMBER: ${{ secrets.AUTO_RACE_USER_NUMBER }}
+          AUTO_RACE_PASSWORD: ${{ secrets.AUTO_RACE_PASSWORD }}
+          AUTO_RACE_PIN: ${{ secrets.AUTO_RACE_PIN }}
+          SPAT4_MEMBERNUM: ${{ secrets.SPAT4_MEMBERNUM }}
+          SPAT4_MEMBERID: ${{ secrets.SPAT4_MEMBERID }}
+          SPAT4_MEMBERPASS: ${{ secrets.SPAT4_MEMBERPASS }}
+        run: |
+          docker-compose -f docker/docker-compose.yml up -d --build
+
+      - name: run auto racing script
+        run: |
+          docker exec app python ./auto_collect_autoracing.py
+
+      # - name: run spat4 script
+      #   run: |
+      #     docker exec app python ./auto_collect_spat4.py
+
+      - name: slack notification on success
+        uses: rtCamp/action-slack-notify@v2
+        if: ${{ success() }}
+        env:
+          SLACK_USERNAME: auto-point-acquisition
+          SLACK_TITLE: Success
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_MESSAGE: 自動精算が完了しました🚀
+
+      - name: slack notification on failure
+        uses: rtCamp/action-slack-notify@v2
+        if: ${{ failure() }}
+        env:
+          SLACK_USERNAME: auto-point-acquisition
+          SLACK_TITLE: Failure
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_MESSAGE: 自動精算が失敗しました😢
