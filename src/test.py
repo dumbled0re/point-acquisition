@@ -1,3 +1,4 @@
+import re
 import sys
 from time import sleep
 
@@ -29,6 +30,10 @@ def driver_init():
 def quit_driver(driver):
     driver.close()
     driver.quit()
+
+
+def convert_to_int(text):
+    return int(re.sub(r"[^\d]", "", text))
 
 
 def deposit_autorace(driver):
@@ -110,10 +115,6 @@ def deposit_autorace(driver):
     button.click()
     sleep(3)
 
-    # 清算
-    # element = driver.find_element_by_name('btnWireOut')
-    # element.click()
-
     # ポップアップウィンドウに表示されたメッセージに同意(Alert(driver).dismiss()で、アラートを拒否)
     # Alert(driver).accept()
 
@@ -177,13 +178,86 @@ def deposit_spat4(driver):
     sleep(5)
 
 
+def collect_autorace(driver):
+    # JRAにアクセス
+    driver.get("https://vote.autorace.jp/login")
+    sleep(3)
+
+    # ログイン
+    search = driver.find_element(By.NAME, "userNumber")
+    search.send_keys(config.AUTO_RACE_USER_NUMBER)
+
+    search = driver.find_element(By.NAME, "password")
+    search.send_keys(config.AUTO_RACE_PASSWORD)
+
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, "button.jsx-2171994817.button.button--primary")
+        )
+    )
+    button.click()
+    sleep(3)
+
+    # 精算リンク
+    a_item = driver.find_element(
+        By.XPATH, "//*[@id='__next']/div/div/div[1]/div/ul/li[3]/a"
+    )
+    url = a_item.get_attribute("href")
+    driver.get(url)
+    sleep(3)
+
+    # 精算可能金額を取得
+    text = driver.find_element(
+        By.XPATH, "//*[@id='__next']/div/div/div[2]/div/div/div[2]/div[2]/span"
+    ).text
+    amount = convert_to_int(text)
+
+    search = driver.find_element(
+        By.XPATH, "//*[@id='__next']/div/div/div[2]/div/div/div[2]/div[1]/div/input"
+    )
+    search.send_keys(amount)
+
+    # 精算ボタンクリック
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (
+                By.XPATH,
+                "//*[@id='__next']/div/div/div[2]/div/div/div[2]/button",
+            )
+        )
+    )
+    button.click()
+    sleep(3)
+
+    # 暗証番号の入力
+    search = driver.find_element(
+        By.XPATH, "/html/body/reach-portal/div/div/div/div[2]/div[1]/input"
+    )
+    search.send_keys(config.AUTO_RACE_PIN)
+
+    # okボタンクリック
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (
+                By.CSS_SELECTOR,
+                "body > reach-portal > div > div > div > div:nth-child(2) > div.jsx-2710184671._flex._justify-between > button.jsx-2171994817.button.button--primary._ml-1._w-48",
+            )
+        )
+    )
+    button.click()
+    sleep(3)
+
+    # ポップアップウィンドウに表示されたメッセージに同意(Alert(driver).dismiss()で、アラートを拒否)
+    # Alert(driver).accept()
+
+
 def main():
     slack = SlackNotify()
     arg = sys.argv
     if not len(arg) > 1:
         print("引数がありません")
         sys.exit()
-    if arg[1] == "autorace":
+    if arg[1] == "deposit_autorace":
         try:
             driver = driver_init()
             deposit_autorace(driver)
@@ -194,13 +268,13 @@ def main():
             )
         except ZeroDivisionError:
             slack.slack_notify(
-                text="SPAT4に入金が失敗しました",
+                text="オートレースに入金が失敗しました",
                 username="auto-deposit-autoracing",
                 color="danger",
             )
         finally:
             quit_driver(driver)
-    elif arg[1] == "spat4":
+    elif arg[1] == "deposit_spat4":
         try:
             driver = driver_init()
             deposit_spat4(driver)
@@ -213,6 +287,23 @@ def main():
             slack.slack_notify(
                 text="SPAT4に入金が失敗しました",
                 username="auto-deposit-spat4",
+                color="danger",
+            )
+        finally:
+            quit_driver(driver)
+    elif arg[1] == "collect_autorace":
+        try:
+            driver = driver_init()
+            collect_autorace(driver)
+            slack.slack_notify(
+                text="オートレースの精算が完了しました",
+                username="auto-collect-autorace",
+                color="good",
+            )
+        except ZeroDivisionError:
+            slack.slack_notify(
+                text="オートレースの精算が失敗しました",
+                username="auto-collect-autorace",
                 color="danger",
             )
         finally:
