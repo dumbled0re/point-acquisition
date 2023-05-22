@@ -306,6 +306,39 @@ def collect_spat4(driver):
     sleep(3)
 
 
+def get_point_from_point_income(driver):
+    driver.get("https://pointi.jp/entrance.php")
+    sleep(3)
+
+    search = driver.find_element(By.NAME, "email_address")
+    search.send_keys(config.POINT_INCOME_EMAIL)
+
+    password = driver.find_element(By.NAME, "password")
+    password.send_keys(config.POINT_INCOME_PASSWORD)
+
+    driver.execute_script("arguments[0].scrollIntoView(true);", password)
+
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.NAME, "Submit"))
+    )
+    button.click()
+    sleep(3)
+
+    driver.get("https://pointi.jp/daily.php")
+    sleep(3)
+
+    elems = WebDriverWait(driver, 10).until(
+        # EC.presence_of_all_elements_located((By.XPATH, "//div[@class='click_btn']"))
+        EC.visibility_of_all_elements_located((By.XPATH, "//div[@class='click_btn']"))
+    )
+
+    # 全てのボタンをクリック
+    for elem in elems:
+        elem.click()
+        sleep(1)
+    sleep(5)
+
+
 def main():
     slack = SlackNotify()
     arg = sys.argv
@@ -376,6 +409,23 @@ def main():
             slack.slack_notify(
                 text="SPAT4の精算が失敗しました",
                 username="auto-collect-spat4",
+                color="danger",
+            )
+        finally:
+            quit_driver(driver)
+    elif arg[1] == "point_income":
+        try:
+            driver = driver_init()
+            get_point_from_point_income(driver)
+            slack.slack_notify(
+                text="Point Incomeのクリックが成功しました",
+                username="auto-get-point-income",
+                color="good",
+            )
+        except ZeroDivisionError:
+            slack.slack_notify(
+                text="Point Incomeのクリックが失敗しました",
+                username="auto-get-point-income",
                 color="danger",
             )
         finally:
