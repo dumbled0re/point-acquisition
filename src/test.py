@@ -251,6 +251,61 @@ def collect_autorace(driver):
     # Alert(driver).accept()
 
 
+def collect_spat4(driver):
+    # spat4にアクセス
+    driver.get("https://www.spat4.jp/keiba/pc")
+    sleep(3)
+
+    # ログイン
+    search = driver.find_element(By.ID, "MEMBERNUMR")
+    search.send_keys(config.SPAT4_MEMBERNUM)
+
+    search = driver.find_element(By.ID, "MEMBERIDR")
+    search.send_keys(config.SPAT4_MEMBERID)
+
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.XPATH, "/html/body/div/div[1]/form/a/span"))
+    )
+    button.click()
+    sleep(3)
+
+    # 精算ページに遷移
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (By.XPATH, "/html/body/form/div/div[3]/div/ul/li[5]/input")
+        )
+    )
+    button.click()
+    sleep(3)
+
+    driver.switch_to.window(driver.window_handles[-1])
+
+    # 通知の必要
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.NAME, "MAILR"))
+    )
+    button.click()
+    sleep(3)
+
+    # 精算指示確認
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.XPATH, "//*[@id='seisanForm']/div/input"))
+    )
+    button.click()
+    sleep(3)
+
+    # 暗証番号の入力
+    search = driver.find_element(By.ID, "MEMBERPASSR")
+    search.send_keys(config.SPAT4_MEMBERPASS)
+
+    # 精算ボタン
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.NAME, "EXEC"))
+    )
+    button.click()
+    sleep(3)
+
+
 def main():
     slack = SlackNotify()
     arg = sys.argv
@@ -304,6 +359,23 @@ def main():
             slack.slack_notify(
                 text="オートレースの精算が失敗しました",
                 username="auto-collect-autorace",
+                color="danger",
+            )
+        finally:
+            quit_driver(driver)
+    elif arg[1] == "collect_spat4":
+        try:
+            driver = driver_init()
+            collect_spat4(driver)
+            slack.slack_notify(
+                text="SPAT4の精算が完了しました",
+                username="auto-collect-spat4",
+                color="good",
+            )
+        except ZeroDivisionError:
+            slack.slack_notify(
+                text="SPAT4の精算が失敗しました",
+                username="auto-collect-spat4",
                 color="danger",
             )
         finally:
