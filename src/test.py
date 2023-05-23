@@ -251,6 +251,94 @@ def collect_autorace(driver):
     # Alert(driver).accept()
 
 
+def collect_spat4(driver):
+    # spat4にアクセス
+    driver.get("https://www.spat4.jp/keiba/pc")
+    sleep(3)
+
+    # ログイン
+    search = driver.find_element(By.ID, "MEMBERNUMR")
+    search.send_keys(config.SPAT4_MEMBERNUM)
+
+    search = driver.find_element(By.ID, "MEMBERIDR")
+    search.send_keys(config.SPAT4_MEMBERID)
+
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.XPATH, "/html/body/div/div[1]/form/a/span"))
+    )
+    button.click()
+    sleep(3)
+
+    # 精算ページに遷移
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (By.XPATH, "/html/body/form/div/div[3]/div/ul/li[5]/input")
+        )
+    )
+    button.click()
+    sleep(3)
+
+    driver.switch_to.window(driver.window_handles[-1])
+
+    # 通知の必要
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.NAME, "MAILR"))
+    )
+    button.click()
+    sleep(3)
+
+    # 精算指示確認
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.XPATH, "//*[@id='seisanForm']/div/input"))
+    )
+    button.click()
+    sleep(3)
+
+    # 暗証番号の入力
+    search = driver.find_element(By.ID, "MEMBERPASSR")
+    search.send_keys(config.SPAT4_MEMBERPASS)
+
+    # 精算ボタン
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.NAME, "EXEC"))
+    )
+    button.click()
+    sleep(3)
+
+
+def get_point_from_point_income(driver):
+    driver.get("https://pointi.jp/entrance.php")
+    sleep(3)
+
+    search = driver.find_element(By.NAME, "email_address")
+    search.send_keys(config.POINT_INCOME_EMAIL)
+
+    password = driver.find_element(By.NAME, "password")
+    password.send_keys(config.POINT_INCOME_PASSWORD)
+
+    driver.execute_script("arguments[0].scrollIntoView(true);", password)
+
+    button = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.NAME, "Submit"))
+    )
+    button.click()
+    sleep(3)
+
+    driver.get("https://pointi.jp/daily.php")
+    sleep(3)
+
+    elems = WebDriverWait(driver, 10).until(
+        # EC.presence_of_all_elements_located((By.XPATH, "//div[@class='click_btn']"))
+        EC.visibility_of_all_elements_located((By.XPATH, "//div[@class='click_btn']"))
+    )
+
+    # 全てのボタンをクリック
+    for elem in elems:
+        elem.click()
+        sleep(1)
+    sleep(5)
+
+
 def main():
     slack = SlackNotify()
     arg = sys.argv
@@ -304,6 +392,40 @@ def main():
             slack.slack_notify(
                 text="オートレースの精算が失敗しました",
                 username="auto-collect-autorace",
+                color="danger",
+            )
+        finally:
+            quit_driver(driver)
+    elif arg[1] == "collect_spat4":
+        try:
+            driver = driver_init()
+            collect_spat4(driver)
+            slack.slack_notify(
+                text="SPAT4の精算が完了しました",
+                username="auto-collect-spat4",
+                color="good",
+            )
+        except ZeroDivisionError:
+            slack.slack_notify(
+                text="SPAT4の精算が失敗しました",
+                username="auto-collect-spat4",
+                color="danger",
+            )
+        finally:
+            quit_driver(driver)
+    elif arg[1] == "point_income":
+        try:
+            driver = driver_init()
+            get_point_from_point_income(driver)
+            slack.slack_notify(
+                text="Point Incomeのクリックが成功しました",
+                username="auto-get-point-income",
+                color="good",
+            )
+        except ZeroDivisionError:
+            slack.slack_notify(
+                text="Point Incomeのクリックが失敗しました",
+                username="auto-get-point-income",
                 color="danger",
             )
         finally:

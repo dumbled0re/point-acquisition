@@ -16,8 +16,6 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v2
-        # with:
-        #   ref: feature/spat4
 
       - name: set up docker compose
         env:
@@ -34,9 +32,9 @@ jobs:
         run: |
           docker exec app python ./auto_collect_autoracing.py
 
-      # - name: run spat4 script
-      #   run: |
-      #     docker exec app python ./auto_collect_spat4.py
+      - name: run spat4 script
+        run: |
+          docker exec app python ./auto_collect_spat4.py
 
       - name: slack notification on success
         uses: rtCamp/action-slack-notify@v2
