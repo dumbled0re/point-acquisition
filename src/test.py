@@ -328,8 +328,8 @@ def get_point_from_point_income(driver):
     sleep(3)
 
     elems = WebDriverWait(driver, 10).until(
-        # EC.presence_of_all_elements_located((By.XPATH, "//div[@class='click_btn']"))
-        EC.visibility_of_all_elements_located((By.XPATH, "//div[@class='click_btn']"))
+        # EC.presence_of_all_elements_located((By.XPATH, "//div[@class='go_btn']"))
+        EC.visibility_of_all_elements_located((By.XPATH, "//div[@class='go_btn']"))
     )
 
     # 全てのボタンをクリック
