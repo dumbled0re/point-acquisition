@@ -129,3 +129,22 @@ dmypy.json
 .pyre/
 
 .vscode
+
+# playwrite
+node_modules/
+test-results*/
+allure-results*/
+allure-report*/
+playwright-report*/
+tmp/
+.envrc
+/.idea/
+/package-lock.json
+/.node-version
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
