@@ -1,0 +1,22 @@
+{
+  "name": "point-acquisition",
+  "version": "1.0.0",
+  "description": "自動入金やポイントサイトからのポイントを取得するプログラム",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dumbled0re/point-acquisition.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dumbled0re/point-acquisition/issues"
+  },
+  "homepage": "https://github.com/dumbled0re/point-acquisition#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.42.1",
+    "@types/node": "^20.11.24"
+  }
+}
